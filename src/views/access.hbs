@@ -1,0 +1,389 @@
+<div id="disable-body-modal"></div>
+<nav class="navbar navbar-dark navbar-expand-md">
+	<a id="nav-home" class="navbar-brand" href="/dashboard">
+		<img src="/assets/favicon.svg">
+		&nbsp;
+		&nbsp;
+		<p>DotKeeper</p>
+	</a>
+	<button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar">
+		<span class="navbar-toggler-icon"></span>
+	</button>
+	<div class="navbar-collapse collapse" id="navbar">
+		<ul class="navbar-nav">
+			<li class="nav-item"><a href="/project/overview/{{this.projectId}}" class="nav-link">Overview</a></li>
+			<li class="nav-item"><a href="#" class="nav-link active-op disabled">Access</a></li>
+			<li class="nav-item"><a href="/project/settings/{{this.projectId}}" class="nav-link">Settings</a></li>
+		</ul>
+	</div>
+</nav>
+<div class="main">
+	<div class="container main-container">
+		<div class="row section-heading">
+			<div class="col-sm-9">Collaborator</div>
+			<div class="col-sm-2">Permission</div>
+			<div class="col-sm-1">
+				{{#ifEqual 'owner' userPermission}}
+				<div class="env-options">
+					<button id="add-collaborator-btn" onclick="openSideModal()">
+						<div id="add-collaborator-text">
+							Add
+						</div>
+						<div id="saving-collaborator">
+							<i class="fas fa-circle-notch fa-spin"></i>
+						</div>
+					</button>
+				</div>
+				{{else}}
+				<div class="env-options">
+					<abbr title="Only for Owner">
+						<button id="add-collaborator-btn" class="disabled-btn" disabled>
+							<div id="add-collaborator-text">
+								Add
+							</div>
+							<div id="saving-collaborator">
+								<i class="fas fa-circle-notch fa-spin"></i>
+							</div>
+						</button>
+					</abbr>
+				</div>
+				{{/ifEqual}}
+			</div>
+		</div>
+		{{!-- First Row --}}
+		<div class="row self">
+			<div>
+				<hr>
+			</div>
+			<div class="col-sm-9 email">{{userEmail}}</div>
+			<div class="col-sm-2">
+				{{#ifEqual 'owner' userPermission}}
+				<abbr title="Owner">
+					<img class="owner permission-enabled" src="/assets/owner.png">
+				</abbr>
+				{{else ifEqual 'editor' userPermission}}
+				<abbr title="Editor">
+					<img class="editor permission-enabled" src="/assets/editor.png">
+				</abbr>
+				{{else}}
+				<abbr title="Viewer">
+					<img class="viewer permission-enabled" src="/assets/viewer.png">
+				</abbr>
+				{{/ifEqual}}
+			</div>
+			<div class="col-sm-1"></div>
+		</div>
+		{{#each users}}
+		<div class="row">
+			<div>
+				<hr>
+			</div>
+			<div class="col-sm-9 email">{{this.email}}</div>
+			<div class="col-sm-2">
+				{{#ifEqual 'owner' this.permission}}
+				<abbr title="Owner">
+					<img class="owner permission-enabled" src="/assets/owner.png">
+				</abbr>
+				{{else ifEqual 'editor' this.permission}}
+				<abbr title="Editor">
+					<img class="editor permission-enabled" src="/assets/editor.png">
+				</abbr>
+				{{else}}
+				<abbr title="Viewer">
+					<img class="viewer permission-enabled" src="/assets/viewer.png">
+				</abbr>
+				{{/ifEqual}}
+			</div>
+			<div class="col-sm-1">
+				{{#ifEqual 'owner' ../userPermission}}
+				<button>
+					<img id="remove-collaborator-btn" class="edit" src="/assets/cancel.png" onclick="removeCollaborator(this)">
+				</button>
+				{{else}}
+				{{/ifEqual}}
+			</div>
+		</div>
+		{{/each}}
+	</div>
+</div>
+<div id="side-modal">
+	<p class="center">Add collaborator</p>
+	<hr>
+	<br>
+	<label>Email address</label>
+	<br>
+	<input type="email" id="collaborator-email" class="form-control key small-font" placeholder="user@domain.com">
+	<div id="collaborator-email-error-side-modal">Required</div>
+	<label>Permission</label>
+	<br>
+	<select name="collaborator-permissions" id="collaborator-permissions" class="small-font" st>
+		<option value="viewer">Viewer</option>
+		<option value="editor">Editor</option>
+		{{!--
+		<option value="owner">Owner</option>
+		--}}
+	</select>
+	<div class="btn-container">
+		<hr>
+		<br>
+		<div class="row">
+			<div class="col-sm-6 btn-holder">
+				<button id="no-side-modal-btn" onclick="noSideModal()">Cancel</button>
+			</div>
+			<div class="col-sm-6 btn-holder">
+				<button id="yes-side-modal-btn" onclick="yesSideModal()">
+					<div id="yes-side-modal-text" class="center">
+						Add
+					</div>
+					<div id="yes-side-modal-load" class="center">
+						<i class="fas fa-circle-notch fa-spin"></i>
+					</div>
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="toast" id="message-toast" role="alert" aria-live="assertive" aria-atomic="true">
+	<div class="toast-header">
+		<img src="/assets/favicon.svg" style="width: 25px; height: 25px" class="rounded mr-2" alt="...">
+		&nbsp;
+		&nbsp;
+		<strong id="toast-heading" class="mr-auto error-toast">Not Allowed</strong>
+		{{!-- <small>11 mins ago</small> --}}
+	</div>
+	<div id="toast-body" class="toast-body">
+		You do not have permission to delete the project
+	</div>
+</div>
+<script>
+	const option = {
+		animation: true,
+		autohide: true,
+		delay: 3000
+	};
+
+	var toast = document.getElementById('message-toast');
+	var toastHeading = document.getElementById('toast-heading');
+	var toastBody = document.getElementById('toast-body');
+	var bsToast = new bootstrap.Toast(toast, option);
+
+	const sideModal = document.getElementById('side-modal');
+	const disableBodyModal = document.getElementById('disable-body-modal');
+	const yesSideModalBtn = document.getElementById('yes-side-modal-btn');
+	const yesSideModalText = document.getElementById('yes-side-modal-text');
+	const yesSideModalLoad = document.getElementById('yes-side-modal-load');
+	const noSideModalBtn = document.getElementById('no-side-modal-btn');
+	const addCollaboratorBtn = document.getElementById('add-collaborator-btn');
+	const collaboratorEmailInput = document.getElementById('collaborator-email');
+	const addCollaboratorError = document.getElementById('collaborator-email-error-side-modal');
+
+	var allEmails = [];
+
+	allEmails = "{{ emails }}".split(',');
+
+	function openSideModal() {
+		sideModal.style.width = "25%";
+		sideModal.style.padding = "20px";
+		disableBodyModal.style.display = "block";
+	}
+
+	async function removeCollaborator(x) {
+		var email = x.parentNode.parentNode.parentNode.children[1].innerHTML;
+
+		var myHeaders = new Headers();
+		myHeaders.append("Content-Type", "application/json");
+		myHeaders.append("Accept", "application/json");
+
+		var raw = JSON.stringify({
+			collaboratorEmail: email,
+			projectId: "{{ projectId }}"
+		});
+
+		var requestOptions = {
+			method: 'DELETE',
+			credentials: 'include',
+			headers: myHeaders,
+			body: raw,
+			redirect: 'follow'
+		};
+
+		const response = await fetch("http://localhost:3000/project/edit/collaborator", requestOptions);
+		const result = await response.json();
+
+		if (result.metadata.success) {
+			toastHeading.className = "mr-auto success-toast";
+			toastHeading.innerHTML = "Collaborator Deleted";
+			toastBody.innerHTML = "Collaborator has been deleted successfully";
+			bsToast.show();
+
+			removeValue(email)
+			x.parentNode.parentNode.parentNode.parentNode.removeChild(x.parentNode.parentNode.parentNode);
+		} else {
+			if (result.metadata.status === 403) {
+				toastHeading.className = "mr-auto error-toast";
+				toastHeading.innerHTML = "Not Allowed";
+				toastBody.innerHTML = "You do not have permission to delete collaborators";
+				bsToast.show();
+			} else {
+				toastHeading.className = "mr-auto error-toast";
+				toastHeading.innerHTML = "Internal Error";
+				toastBody.innerHTML = "An error occurred. Please refresh and try again";
+				bsToast.show();
+			}
+		}
+	}
+
+	function removeValue(value) {
+		for (var i = 0; i < allEmails.length; i++) {
+
+			if (allEmails[i] == value) {
+
+				allEmails.splice(i, 1);
+			}
+
+		}
+	}
+
+	function closeSideModal() {
+		sideModal.style.width = "0%";
+		sideModal.style.padding = "0px";
+		disableBodyModal.style.display = "none"
+	}
+
+	async function yesSideModal() {
+		const collaboratorEmail = collaboratorEmailInput.value.trim();
+
+		if (collaboratorEmail === "") {
+			collaboratorEmailInput.style.border = "1px solid #D64242";
+			addCollaboratorError.style.opacity = 1;
+			addCollaboratorError.innerHTML = "Required"
+			return;
+		}
+
+		if (allEmails.includes(collaboratorEmail)) {
+			collaboratorEmailInput.style.border = "1px solid #D64242";
+			addCollaboratorError.style.opacity = 1;
+			addCollaboratorError.innerHTML = "Email already exists as collaborator"
+			return;
+		}
+
+		yesSideModalText.style.display = "none";
+		yesSideModalLoad.style.display = "block";
+		yesSideModalBtn.disabled = true;
+
+		const permissionSelect = document.getElementById("collaborator-permissions");
+		const permission = permissionSelect.options[permissionSelect.selectedIndex].value;
+
+		var myHeaders = new Headers();
+		myHeaders.append("Content-Type", "application/json");
+		myHeaders.append("Accept", "application/json");
+
+		var raw = JSON.stringify({
+			collaboratorEmail,
+			collaboratorPermission: permission,
+			projectId: "{{ projectId }}"
+		});
+
+		var requestOptions = {
+			method: 'POST',
+			credentials: 'include',
+			headers: myHeaders,
+			body: raw,
+			redirect: 'follow'
+		};
+
+		const response = await fetch("http://localhost:3000/project/edit/collaborator", requestOptions);
+		const result = await response.json();
+
+		if (result.metadata.success) {
+			collaboratorEmailInput.value = "";
+			toastHeading.className = "mr-auto success-toast";
+			toastHeading.innerHTML = "Collaborator Added";
+			toastBody.innerHTML = "Collaborator has been added successfully";
+			bsToast.show();
+
+			if (permission === 'editor') {
+				$(`
+   		<div class="row">
+   		<div>
+   			<hr>
+   		</div>
+   		<div class="col-sm-9 email">${collaboratorEmail}</div>
+   		<div class="col-sm-2">
+   			<abbr title="Editor">
+   				<img class="editor permission-enabled" src="/assets/editor.png">
+   			</abbr>
+   		</div>
+   		<div class="col-sm-1">
+
+   			<button>
+   				<img id="remove-collaborator-btn" class="edit" src="/assets/cancel.png"
+   					onclick="removeCollaborator(this)">
+   			</button>
+   		</div>
+   		<div>
+   			<hr>
+   		</div>
+   	</div>
+   	`).insertAfter('div.self');
+			} else {
+				$(`
+   		<div class="row">
+   		<div>
+   			<hr>
+   		</div>
+   		<div class="col-sm-9 email">${collaboratorEmail}</div>
+   		<div class="col-sm-2">
+   			<abbr title="Editor">
+   				<img class="editor permission-enabled" src="/assets/viewer.png">
+   			</abbr>
+   		</div>
+   		<div class="col-sm-1">
+
+   			<button>
+   				<img id="remove-collaborator-btn" class="edit" src="/assets/cancel.png"
+   					onclick="removeCollaborator(this)">
+   			</button>
+   		</div>
+   		<div>
+   			<hr>
+   		</div>
+   	</div>
+   	`).insertAfter('div.self');
+			}
+			closeSideModal()
+		} else {
+			if (result.metadata.status === 403) {
+				toastHeading.className = "mr-auto error-toast";
+				toastHeading.innerHTML = "Not Allowed";
+				toastBody.innerHTML = "You do not have permission to add collaborators";
+				bsToast.show();
+				closeSideModal();
+			} else if (result.metadata.status === 404) {
+				collaboratorEmailInput.style.border = "1px solid #D64242";
+				addCollaboratorError.style.opacity = 1;
+				addCollaboratorError.innerHTML = "Email not found"
+			} else {
+				toastHeading.className = "mr-auto error-toast";
+				toastHeading.innerHTML = "Internal Error";
+				toastBody.innerHTML = "An error occurred. Please refresh and try again";
+				bsToast.show();
+				closeSideModal();
+			}
+		}
+		yesSideModalText.style.display = "flex";
+		yesSideModalLoad.style.display = "none";
+		yesSideModalBtn.disabled = false;
+	}
+
+	function noSideModal() {
+		sideModal.style.width = "0%";
+		sideModal.style.padding = "0px";
+		disableBodyModal.style.display = "none";
+	}
+
+	collaboratorEmailInput.onfocus = () => {
+		collaboratorEmailInput.style.border = "1px solid #76767c";
+		addCollaboratorError.style.opacity = 0;
+	}
+</script>

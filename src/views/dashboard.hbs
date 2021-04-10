@@ -1,0 +1,98 @@
+<div id="feature-banner">
+	<img id="left-illus" src="/assets/ill1.svg">
+	<img id="right-illus" src="/assets/ill4.svg">
+</div>
+<a href="/auth/logout">
+	<img id="logout-btn" src="/assets/logout.png">
+</a>
+<a href="#">
+	<img id="profile-image" src="{{image}}" alt="{{name}}" onmouseover="show(this)" onmouseout="hide(this)">
+	<div id="account-details">
+		<p id="account-details-title">Google Account</p>
+		<p id="account-details-name">{{name}}</p>
+		<p id="account-details-email">{{email}}</p>
+		{{!--
+		<p id="account-details-email">{{image}}</p>
+		--}}
+	</div>
+</a>
+<div class="container all-project-container">
+	<p id="title">Recent Projects</p>
+	<div class="row">
+		<button class=" col-sm-4 project-card-container">
+			<div class="hoverable project-card center" onclick="openModal()">
+				<br>
+				<p class="project-name" style="color: var(--green);">Add project</p>
+				<p class="project-id" style="opacity: 0;">Click here</p>
+				<br>
+				<abbr title="Add Project"><img class="owner permission-enabled" src="/assets/add.png"></abbr>
+				<br>
+				<br>
+			</div>
+		</button>
+		{{#each projects}}
+		<button class=" col-sm-4 project-card-container">
+			<a href="/project/overview/{{this.projectId}}">
+				<div class="hoverable project-card">
+					<p class="project-name">{{this.projectName}}</p>
+					<p class="project-id">{{this.projectId}}</p>
+					<br><br><br>
+					{{!-- Owner --}}
+					{{#ifEqual this.permission 'owner'}}
+					<div class="permission">
+						<abbr title="Owner"><img class="owner permission-enabled" src="/assets/owner.png"></abbr>
+						<abbr title="Editor"><img class="editor permission-disabled" src="/assets/editor.png"></abbr>
+						<abbr title="Viewer"><img class="viewer permission-disabled" src="/assets/viewer.png"></abbr>
+					</div>
+					{{!-- Editor --}}
+					{{else ifEqual this.permission 'editor'}}
+					<abbr title="Owner"><img class="owner permission-disabled" src="/assets/owner.png"></abbr>
+					<abbr title="Editor"><img class="editor permission-enabled" src="/assets/editor.png"></abbr>
+					<abbr title="Viewer"><img class="viewer permission-disabled" src="/assets/viewer.png"></abbr>
+					{{!-- Viewer --}}
+					{{else}}
+					<abbr title="Owner"><img class="owner permission-disabled" src="/assets/owner.png"></abbr>
+					<abbr title="Editor"><img class="editor permission-disabled" src="/assets/editor.png"></abbr>
+					<abbr title="Viewer"><img class="viewer permission-enabled" src="/assets/viewer.png"></abbr>
+					{{/ifEqual}}
+				</div>
+			</a>
+		</button>
+		{{/each}}
+	</div>
+</div>
+<div id="modal">
+	<button><img id="close-modal" src="/assets/cross.png"></button>
+	<div id="modal-content-holder">
+		<p>Let's start with a name for <br> your project</p>
+		<br><br>
+		<form action="/project/create" method="POST">
+			<input id="project-name-field" name="name" placeholder="Enter your project name" required autocomplete="off"
+				autocorrect="off" autocapitalize="off" spellcheck="false">
+			<div id="project-name-error">Required</div>
+			<br><br><br><br>
+			<input type="submit" value="Create project" id="create-project-btn">
+		</form>
+	</div>
+	<img id="create-illus" class="center" src="/assets/ill2.svg">
+</div>
+<script>
+
+	function show() {
+		document.getElementById('account-details').style.display = "block"
+	}
+
+	function hide() {
+		document.getElementById('account-details').style.display = "none"
+	}
+
+	function openModal() {
+		document.getElementById("modal").style.width = "100%";
+		document.getElementById("modal").style.padding = "20px";
+	}
+
+	document.getElementById('close-modal').onclick = () => {
+		document.getElementById("modal").style.width = "0%";
+		document.getElementById("modal").style.padding = "0px";
+	}
+</script>

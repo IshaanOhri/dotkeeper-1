@@ -1,0 +1,748 @@
+<div id="disable-body-modal"></div>
+
+<nav class="navbar navbar-dark navbar-expand-md">
+	<a id="nav-home" class="navbar-brand" href="/dashboard">
+		<img src="/assets/favicon.svg">
+		&nbsp;
+		&nbsp;
+		<p>DotKeeper</p>
+	</a>
+	<button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar">
+		<span class="navbar-toggler-icon"></span>
+	</button>
+	<div class="navbar-collapse collapse" id="navbar">
+		<ul class="navbar-nav">
+			<li class="nav-item"><a href="#" class="nav-link active-op disabled">Overview</a></li>
+			<li class="nav-item"><a href="/project/access/{{this.projectId}}" class="nav-link">Access</a></li>
+			<li class="nav-item"><a href="/project/settings/{{this.projectId}}" class="nav-link">Settings</a></li>
+		</ul>
+	</div>
+</nav>
+
+<div class="main">
+	<div class="container main-container">
+
+		{{!-- Add Row --}}
+
+		<div class="row project-info">
+			<div class="col-sm-3">
+				<p class="section-heading">Project Information</p>
+			</div>
+			<div class="col-sm-9">
+				<div class="row">
+					<div class="col-sm-4">Project Name</div>
+					<div class="col-sm-8">{{projectName}}</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-4">Project ID</div>
+					<div class="col-sm-8">{{projectId}}</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-4">GitHub Repo</div>
+					<div class="col-sm-8">
+
+						<i class="fab fa-github"></i>
+
+						{{!-- Owner GitHub --}}
+						{{#ifEqual 'owner' permission}}
+
+						<input id="github-link-field" placeholder="(optional)" class="ghost-input" disabled>
+						<button>
+							<img id="edit-github-btn" class="edit" src="/assets/edit.png" onclick="editGithub()">
+						</button>
+						<button>
+							<img id="tick-github-btn" class="edit" src="/assets/tick.png" onclick="tickGithub()">
+						</button>
+						<button>
+							<img id="cancel-github-btn" class="edit" src="/assets/cancel.png" onclick="cancelGithub()">
+						</button>
+
+						{{!-- Editor GitHub --}}
+						{{else ifEqual 'editor' permission}}
+
+						<input id="github-link-field" placeholder="(optional)" class="ghost-input" disabled>
+						<button>
+							<img id="edit-github-btn" class="edit" src="/assets/edit.png" onclick="editGithub()">
+						</button>
+						<button>
+							<img id="tick-github-btn" class="edit" src="/assets/tick.png" onclick="tickGithub()">
+						</button>
+						<button>
+							<img id="cancel-github-btn" class="edit" src="/assets/cancel.png" onclick="cancelGithub()">
+						</button>
+
+						{{!-- Viewer GitHub --}}
+						{{else}}
+						<input id="github-link-field" placeholder="N/A" class="ghost-input" disabled>
+
+						{{/ifEqual}}
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-4">Website</div>
+					<div class="col-sm-8">
+
+						<i class="fas fa-globe-americas"></i>
+
+						{{!-- Owner Website --}}
+						{{#ifEqual 'owner' permission}}
+
+						<input id="website-link-field" placeholder="(optional)" class="ghost-input" disabled>
+						<button>
+							<img id="edit-website-btn" class="edit" src="/assets/edit.png" onclick="editWebsite()">
+						</button>
+						<button>
+							<img id="tick-website-btn" class="edit" src="/assets/tick.png" onclick="tickWebsite()">
+						</button>
+						<button>
+							<img id="cancel-website-btn" class="edit" src="/assets/cancel.png" onclick="cancelWebsite()">
+						</button>
+
+						{{!-- Editor Website --}}
+						{{else ifEqual 'editor' permission}}
+
+						<input id="website-link-field" placeholder="(optional)" class="ghost-input" disabled>
+						<button>
+							<img id="edit-website-btn" class="edit" src="/assets/edit.png" onclick="editWebsite()">
+						</button>
+						<button>
+							<img id="tick-website-btn" class="edit" src="/assets/tick.png" onclick="tickWebsite()">
+						</button>
+						<button>
+							<img id="cancel-website-btn" class="edit" src="/assets/cancel.png" onclick="cancelWebsite()">
+						</button>
+
+						{{!-- Viewer Website --}}
+						{{else}}
+						<input id="website-link-field" placeholder="N/A" class="ghost-input" disabled>
+
+						{{/ifEqual}}
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-sm-4">Permission</div>
+					<div class="col-sm-8 permission-overview">
+
+						{{!-- Owner Permission --}}
+						{{#ifEqual 'owner' permission}}
+
+						<img class="owner permission-enabled" src="/assets/owner.png">
+						&nbsp;
+						<p>Owner</p>
+
+						{{!-- Editor Permission --}}
+						{{else ifEqual 'editor' permission}}
+
+						<img class="editor permission-enabled" src="/assets/editor.png">
+						&nbsp;
+						<p>Editor</p>
+
+						{{!-- Viewer Permission --}}
+						{{else}}
+						<img class="viewer permission-enabled" src="/assets/viewer.png">
+						&nbsp;
+						<p>Viewer</p>
+
+						{{/ifEqual}}
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+		<br>
+
+		<hr>
+
+		<br>
+
+		<div class="row config-vars">
+			<div class="col-sm-3">
+				<p class="section-heading">Config Vars</p>
+			</div>
+			<div class="col-sm-9">
+
+				{{#ifEqual 'owner' permission}}
+
+				<div class="row add-row env-font-div">
+					<div class="col-sm-5">
+						<input type="text" id="add-key" class="form-control key" placeholder="KEY" aria-label="KEY">
+					</div>
+					<div class="col-sm-5">
+						<input type="text" id="add-value" class="form-control value" placeholder="VALUE" aria-label="VALUE">
+					</div>
+					<div class="col-sm-2">
+						<div class="env-options">
+							<button id="add-env-btn">
+								<div id="add-env">
+									Add
+								</div>
+								<div id="saving-env">
+									<i class="fas fa-circle-notch fa-spin"></i>
+								</div>
+							</button>
+						</div>
+					</div>
+					<div id="key-error">Required</div>
+				</div>
+
+				{{else ifEqual 'editor' permission}}
+
+				<div class="row add-row env-font-div">
+					<div class="col-sm-5">
+						<input type="text" id="add-key" class="form-control key" placeholder="KEY" aria-label="KEY">
+					</div>
+					<div class="col-sm-5">
+						<input type="text" id="add-value" class="form-control value" placeholder="VALUE" aria-label="VALUE">
+					</div>
+					<div class="col-sm-2">
+						<div class="env-options">
+							<button id="add-env-btn">
+								<div id="add-env">
+									Add
+								</div>
+								<div id="saving-env">
+									<i class="fas fa-circle-notch fa-spin"></i>
+								</div>
+							</button>
+						</div>
+					</div>
+					<div id="key-error">Required</div>
+				</div>
+
+				{{else}}
+
+				{{/ifEqual}}
+
+				{{#each variables}}
+
+				<div class="row env-font-div">
+					<div>
+						<hr>
+					</div>
+					<div class="col-sm-5">
+						<input type="text" class="form-control key" placeholder="KEY" aria-label="KEY" disabled
+							value="{{this.key}}">
+					</div>
+					<div class="col-sm-5">
+						<input type="text" class="form-control value" placeholder="VALUE" aria-label="VALUE" disabled
+							value="{{this.value}}">
+					</div>
+					<div class="col-sm-2">
+
+						{{#ifEqual 'owner' ../permission}}
+
+						<div class="env-options">
+							<button>
+								<img class="edit" src="/assets/edit.png" onclick="editVar(this)">
+							</button>
+							{{!-- &nbsp --}}
+							<button>
+								<img class="delete" src="/assets/cancel.png" onclick="deleteVar(this)">
+							</button>
+						</div>
+
+						{{else ifEqual 'editor' ../permission}}
+
+
+						<div class="env-options">
+							<button>
+								<img class="edit" src="/assets/edit.png" onclick="editVar(this)">
+							</button>
+							{{!-- &nbsp --}}
+							<button>
+								<img class="delete" src="/assets/cancel.png" onclick="deleteVar(this)">
+							</button>
+						</div>
+
+						{{else}}
+
+						{{/ifEqual}}
+
+					</div>
+				</div>
+
+				{{/each}}
+
+
+
+
+			</div>
+		</div>
+	</div>
+
+
+	<div id="env-edit-modal">
+
+		<p class="center">Edit config variable</p>
+
+		<hr>
+		<br>
+
+		<label>Key</label><br>
+		<input type="text" id="edit-key" class="form-control key" placeholder="KEY" aria-label="KEY">
+		<div id="key-error-modal">Required</div>
+
+		{{!-- <br> --}}
+		<label>Value</label><br>
+		<textarea type="text" id="edit-value" class="form-control value" placeholder="VALUE" aria-label="VALUE"></textarea>
+
+		<div class="btn-container">
+			<hr>
+			<br>
+			<div class="row">
+				<div class="col-sm-6 btn-holder">
+					<button id="close-edit-env-modal" onclick="closeEditEnvModal()">Cancel</button>
+				</div>
+
+				<div class="col-sm-6 btn-holder">
+					<button id="save-edit-env" onclick="overwriteEnvVar()">
+						<div id="edit-add-env" class="center">
+							Add
+						</div>
+						<div id="edit-saving-env" class="center">
+							<i class="fas fa-circle-notch fa-spin"></i>
+						</div>
+					</button>
+				</div>
+			</div>
+		</div>
+
+	</div>
+</div>
+
+<div class="toast" id="message-toast" role="alert" aria-live="assertive" aria-atomic="true">
+	<div class="toast-header">
+		<img src="/assets/favicon.svg" style="width: 25px; height: 25px" class="rounded mr-2" alt="...">
+		&nbsp;
+		&nbsp;
+		<strong id="toast-heading" class="mr-auto error-toast">Not Allowed</strong>
+		{{!-- <small>11 mins ago</small> --}}
+	</div>
+	<div id="toast-body" class="toast-body">
+		You do not have permission to delete the project
+	</div>
+</div>
+
+<script>
+	const option = {
+		animation: true,
+		autohide: true,
+		delay: 3000
+	};
+
+	var toast = document.getElementById('message-toast');
+	var toastHeading = document.getElementById('toast-heading');
+	var toastBody = document.getElementById('toast-body');
+	var bsToast = new bootstrap.Toast(toast, option);
+
+	const addKey = document.getElementById('add-key');
+	const addValue = document.getElementById('add-value');
+	const keyError = document.getElementById('key-error');
+	const keyErrorModal = document.getElementById('key-error-modal');
+	const addEnvBtn = document.getElementById('add-env-btn');
+	const editKey = document.getElementById('edit-key');
+	const editValue = document.getElementById('edit-value');
+	const envEditModal = document.getElementById("env-edit-modal");
+	const disableBodyModal = document.getElementById("disable-body-modal");
+	const websiteEditField = document.getElementById('website-link-field');
+	const editWebsiteBtn = document.getElementById('edit-website-btn');
+	const tickWebsiteBtn = document.getElementById('tick-website-btn');
+	const cancelWebsiteBtn = document.getElementById('cancel-website-btn');
+	const gitHubEditField = document.getElementById('github-link-field');
+	const editGitHubBtn = document.getElementById('edit-github-btn');
+	const cancelGitHubBtn = document.getElementById('cancel-github-btn');
+	const tickGitHubBtn = document.getElementById('tick-github-btn');
+	const addEnvText = document.getElementById('add-env');
+	const savingEnvLoad = document.getElementById('saving-env');
+	const editAddEnvText = document.getElementById('edit-add-env');
+	const editSavingEnvLoad = document.getElementById('edit-saving-env');
+	const saveEditEnvBtn = document.getElementById('save-edit-env');
+
+	gitHubEditField.value = "{{github}}";
+	websiteEditField.value = "{{website}}";
+
+	let current, oldKey;
+
+	var allKeys = [];
+
+	allKeys = "{{ keys }}".split(',');
+
+	addKey.onfocus = () => {
+		addKey.style.border = "1px solid #76767c";
+		keyError.style.display = "none"
+	}
+
+	addEnvBtn.onclick = async () => {
+		const key = addKey.value;
+		const value = addValue.value;
+
+		if (key.trim() == "") {
+			addKey.style.border = "1px solid #D64242";
+			keyError.style.display = "block";
+			keyError.innerHTML = "Required"
+			return;
+		}
+
+		if (allKeys.includes(key)) {
+			addKey.style.border = "1px solid #D64242";
+			keyError.style.display = "block";
+			keyError.innerHTML = "KEY already exists"
+			return;
+		}
+
+		addEnvText.style.display = "none";
+		savingEnvLoad.style.display = "block";
+		addEnvBtn.disabled = true;
+
+		var myHeaders = new Headers();
+		myHeaders.append("Content-Type", "application/json");
+		myHeaders.append("Accept", "application/json");
+
+		var raw = JSON.stringify({
+			key,
+			value,
+			projectId: "{{ projectId }}"
+		});
+
+		var requestOptions = {
+			method: 'POST',
+			credentials: 'include',
+			headers: myHeaders,
+			body: raw,
+			redirect: 'follow'
+		};
+
+		const response = await fetch("http://localhost:3000/project/edit/variable", requestOptions);
+		const result = await response.json();
+
+		if (result.metadata.success) {
+			toastHeading.className = "mr-auto success-toast";
+			toastHeading.innerHTML = "Variable Added";
+			toastBody.innerHTML = "Variable has been addded successfully";
+			bsToast.show();
+
+			allKeys.push(key);
+			addEnvText.style.display = "flex";
+			savingEnvLoad.style.display = "none";
+			addEnvBtn.disabled = false;
+			addKey.value = "";
+			addValue.value = "";
+
+			$(`
+			<div class="row env-font-div">
+		<div>
+			<hr>
+		</div>
+				<div class="col-sm-5">
+					<input type="text" class="form-control key" placeholder="KEY" aria-label="KEY" disabled value=${key}>
+				</div>
+				<div class="col-sm-5">
+					<input type="text" class="form-control value" placeholder="VALUE" aria-label="VALUE" disabled
+						value=${value}>
+				</div>
+				<div class="col-sm-2">
+					<div class="env-options">
+						<button>
+							<img class="edit" src="/assets/edit.png" onclick="editVar(this)">
+						</button>
+						<button>
+							<img class="delete" src="/assets/cancel.png" onclick="deleteVar(this)">
+						</button>
+					</div>
+				</div>
+			</div>
+		`).insertAfter('div.add-row');
+
+		} else {
+			if (result.metadata.status === 403) {
+				toastHeading.className = "mr-auto error-toast";
+				toastHeading.innerHTML = "Not Allowed";
+				toastBody.innerHTML = "You do not have permission to add variables";
+				bsToast.show();
+			} else {
+				toastHeading.className = "mr-auto error-toast";
+				toastHeading.innerHTML = "Internal Error";
+				toastBody.innerHTML = "An error occurred. Please refresh and try again";
+				bsToast.show();
+			}
+		}
+	}
+
+	async function deleteVar(x) {
+		var key = x.parentNode.parentNode.parentNode.parentNode.children[1].children[0].value;
+
+		var myHeaders = new Headers();
+		myHeaders.append("Content-Type", "application/json");
+		myHeaders.append("Accept", "application/json");
+
+		var raw = JSON.stringify({
+			key,
+			projectId: "{{ projectId }}"
+		});
+
+		var requestOptions = {
+			method: 'DELETE',
+			credentials: 'include',
+			headers: myHeaders,
+			body: raw,
+			redirect: 'follow'
+		};
+
+		const response = await fetch("http://localhost:3000/project/edit/variable", requestOptions);
+		const result = await response.json();
+
+		if (result.metadata.success) {
+			toastHeading.className = "mr-auto success-toast";
+			toastHeading.innerHTML = "Variable Deleted";
+			toastBody.innerHTML = "Variable has been deleted successfully";
+			bsToast.show();
+
+			removeValue(key);
+			x.parentNode.parentNode.parentNode.parentNode.parentNode.removeChild(x.parentNode.parentNode.parentNode.parentNode);
+		} else {
+			if (result.metadata.status === 403) {
+				toastHeading.className = "mr-auto error-toast";
+				toastHeading.innerHTML = "Not Allowed";
+				toastBody.innerHTML = "You do not have permission to delete variable";
+				bsToast.show();
+			} else {
+				toastHeading.className = "mr-auto error-toast";
+				toastHeading.innerHTML = "Internal Error";
+				toastBody.innerHTML = "An error occurred. Please refresh and try again";
+				bsToast.show();
+			}
+		}
+	}
+
+	function editVar(x) {
+		var key = x.parentNode.parentNode.parentNode.parentNode.children[1].children[0].value;
+		var value = x.parentNode.parentNode.parentNode.parentNode.children[2].children[0].value;
+
+		editKey.value = key;
+		editValue.value = value;
+
+		envEditModal.style.width = "25%";
+		envEditModal.style.padding = "20px";
+		disableBodyModal.style.display = "block"
+
+		current = x;
+		oldKey = key;
+	}
+
+	function closeEditEnvModal() {
+		envEditModal.style.width = "0%";
+		envEditModal.style.padding = "0px";
+		disableBodyModal.style.display = "none"
+	}
+
+	async function overwriteEnvVar() {
+		const newKey = editKey.value;
+		const newValue = editValue.value;
+
+		if (newKey.trim() == "") {
+			editKey.style.border = "1px solid #D64242";
+			keyErrorModal.style.opacity = 1;
+			keyErrorModal.innerHTML = "Required"
+			return;
+		}
+
+		if (allKeys.includes(newKey)) {
+			editKey.style.border = "1px solid #D64242";
+			keyErrorModal.style.opacity = 1;
+			keyErrorModal.innerHTML = "KEY already exists"
+			return;
+		}
+
+		editAddEnvText.style.display = "none";
+		editSavingEnvLoad.style.display = "block";
+		saveEditEnvBtn.disabled = true;
+
+		var myHeaders = new Headers();
+		myHeaders.append("Content-Type", "application/json");
+		myHeaders.append("Accept", "application/json");
+
+		var raw = JSON.stringify({
+			key: newKey,
+			value: newValue,
+			projectId: "{{ projectId }}"
+		});
+
+		var requestOptions = {
+			method: 'POST',
+			credentials: 'include',
+			headers: myHeaders,
+			body: raw,
+			redirect: 'follow'
+		};
+
+		const response = await fetch("http://localhost:3000/project/edit/variable", requestOptions);
+		const result = await response.json();
+
+		if (result.metadata.success) {
+			toastHeading.className = "mr-auto success-toast";
+			toastHeading.innerHTML = "Variable Edited";
+			toastBody.innerHTML = "Variable has been edited successfully";
+			bsToast.show();
+
+			removeValue(oldKey);
+			allKeys.push(newKey);
+
+			current.parentNode.parentNode.parentNode.parentNode.children[1].children[0].value = newKey;
+			current.parentNode.parentNode.parentNode.parentNode.children[2].children[0].value = newValue;
+		} else {
+			if (result.metadata.status === 403) {
+				toastHeading.className = "mr-auto error-toast";
+				toastHeading.innerHTML = "Not Allowed";
+				toastBody.innerHTML = "You do not have permission to edit variables";
+				bsToast.show();
+			} else {
+				toastHeading.className = "mr-auto error-toast";
+				toastHeading.innerHTML = "Internal Error";
+				toastBody.innerHTML = "An error occurred. Please refresh and try again";
+				bsToast.show();
+			}
+		}
+
+		editAddEnvText.style.display = "flex";
+		editSavingEnvLoad.style.display = "none";
+		saveEditEnvBtn.disabled = false;
+
+
+		closeEditEnvModal();
+
+		if (oldKey !== newKey) {
+			var myHeaders = new Headers();
+			myHeaders.append("Content-Type", "application/json");
+			myHeaders.append("Accept", "application/json");
+
+			var raw = JSON.stringify({
+				key: newKey,
+				projectId: "{{ projectId }}"
+			});
+
+			var requestOptions = {
+				method: 'DELETE',
+				credentials: 'include',
+				headers: myHeaders,
+				body: raw,
+				redirect: 'follow'
+			};
+
+			const response = await fetch("http://localhost:3000/project/edit/variable", requestOptions);
+			const result = await response.json();
+		}
+	}
+
+	editKey.onfocus = () => {
+		editKey.style.border = "1px solid #76767c";
+		keyErrorModal.style.opacity = 0;
+	}
+
+	function removeValue(value) {
+		for (var i = 0; i < allKeys.length; i++) {
+
+			if (allKeys[i] == value) {
+
+				allKeys.splice(i, 1);
+			}
+
+		}
+	}
+
+	function editGithub() {
+		gitHubEditField.style.borderBottom = "1px solid var(--grey)"
+		tickGitHubBtn.style.display = "block";
+		cancelGitHubBtn.style.display = "block";
+		editGitHubBtn.style.display = "none";
+		gitHubEditField.disabled = false;
+		gitHubEditField.focus();
+	}
+
+	function editWebsite() {
+		websiteEditField.style.borderBottom = "1px solid var(--grey)"
+		tickWebsiteBtn.style.display = "block";
+		cancelWebsiteBtn.style.display = "block";
+		editWebsiteBtn.style.display = "none";
+		websiteEditField.disabled = false;
+		websiteEditField.focus();
+	}
+
+	function cancelGithub() {
+		gitHubEditField.style.borderBottom = "none"
+		tickGitHubBtn.style.display = "none";
+		cancelGitHubBtn.style.display = "none";
+		editGitHubBtn.style.display = "block";
+		gitHubEditField.value = "{{github}}";
+		gitHubEditField.disabled = true;
+	}
+
+	function cancelWebsite() {
+		websiteEditField.style.borderBottom = "none"
+		tickWebsiteBtn.style.display = "none";
+		cancelWebsiteBtn.style.display = "none";
+		editWebsiteBtn.style.display = "block";
+		websiteEditField.value = "";
+		websiteEditField.disabled = true;
+	}
+
+	async function tickGithub() {
+
+		if (gitHubEditField.value.trim() == "") {
+			gitHubEditField.style.borderBottom = "1px solid var(--error)"
+			return;
+		}
+
+		gitHubEditField.style.borderBottom = "none"
+		const response = await fetch('http://localhost:3000/project/edit/github', {
+			method: 'PATCH',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json',
+				'Accept': 'application/json'
+			},
+			body: JSON.stringify({
+				github: gitHubEditField.value.trim(),
+				projectId: "{{ projectId }}"
+			})
+		});
+
+		const json = await response.json();
+
+		tickGitHubBtn.style.display = "none";
+		cancelGitHubBtn.style.display = "none";
+		editGitHubBtn.style.display = "block";
+		gitHubEditField.disabled = true;
+	}
+
+	async function tickWebsite() {
+
+		if (websiteEditField.value.trim() == "") {
+			websiteEditField.style.borderBottom = "1px solid var(--error)"
+			return;
+		}
+
+		websiteEditField.style.borderBottom = "none"
+		const response = await fetch('http://localhost:3000/project/edit/website', {
+			method: 'PATCH',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json',
+				'Accept': 'application/json'
+			},
+			body: JSON.stringify({
+				website: websiteEditField.value.trim(),
+				projectId: "{{ projectId }}"
+			})
+		});
+
+		const json = await response.json();
+
+		tickWebsiteBtn.style.display = "none";
+		cancelWebsiteBtn.style.display = "none";
+		editWebsiteBtn.style.display = "block";
+		websiteEditField.disabled = true;
+	}
+
+</script>

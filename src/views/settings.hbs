@@ -1,0 +1,429 @@
+<div id="disable-body-modal"></div>
+<nav class="navbar navbar-dark navbar-expand-md">
+	<a id="nav-home" class="navbar-brand" href="/dashboard">
+		<img src="/assets/favicon.svg">
+		&nbsp;
+		&nbsp;
+		<p>DotKeeper</p>
+	</a>
+	<button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar">
+		<span class="navbar-toggler-icon"></span>
+	</button>
+	<div class="navbar-collapse collapse" id="navbar">
+		<ul class="navbar-nav">
+			<li class="nav-item"><a href="/project/overview/{{this.projectId}}" class="nav-link">Overview</a></li>
+			<li class="nav-item"><a href="/project/access/{{this.projectId}}" class="nav-link">Access</a></li>
+			<li class="nav-item"><a href="#" class="nav-link active-op disabled">Settings</a></li>
+		</ul>
+	</div>
+</nav>
+<div class="main">
+	<div class="container main-container">
+		<div class="row section">
+			<div class="col-sm-3">
+				<p class="error">Delete Project</p>
+				{{!-- <br> --}}
+				<p class="error" style="font-size: small;">Deleting your project is irreversible.<br>(Only for Owner
+					<img class="owner permission-enabled" style="width: 20px; height: 20px;" src="/assets/owner.png">)
+				</p>
+			</div>
+			<div class="col-sm-9">
+				{{#ifEqual 'owner' permission}}
+				<button class="error-btn" onclick="openDeleteModal()">Delete project</button>
+				{{else}}
+				<abbr title="Only for Owner">
+					<button class="error-btn disabled-btn" onclick="openDeleteModal()" disabled>Delete project</button>
+				</abbr>
+				{{/ifEqual}}
+			</div>
+		</div>
+		<div>
+			<hr>
+		</div>
+		<div class="row section">
+			<div class="col-sm-3">
+				<p class="section-heading">GitHub</p>
+				{{!-- <br> --}}
+				<p class="" style="font-size: small;">Let the developers know where to push.<br>(Only for Owner
+					<img class="owner permission-enabled" style="width: 20px; height: 20px;" src="/assets/owner.png"> and Editor
+					<img class="owner permission-enabled" style="width: 20px; height: 20px;" src="/assets/editor.png">)
+				</p>
+			</div>
+			<div class="col-sm-9" id="github-link">
+				<p>
+					<i class="fab fa-github"></i>
+					{{#if github}}
+					{{github}}
+					{{else}}
+					(Empty)
+					{{/if}}
+				</p>
+				{{#ifEqual 'owner' permission}}
+				<button class="normal-btn" onclick="editGitHub()">Edit</button>
+				{{else ifEqual 'editor' permission}}
+				<button class="normal-btn" onclick="editGitHub()">Edit</button>
+				{{else}}
+				<abbr title="Only for Owner and Editor">
+					<button class="normal-btn disabled-btn" disabled>Edit</button>
+				</abbr>
+				{{/ifEqual}}
+			</div>
+		</div>
+		<div>
+			<hr>
+		</div>
+		<div class="row section">
+			<div class="col-sm-3">
+				<p class="section-heading">Website</p>
+				{{!-- <br> --}}
+				<p class="" style="font-size: small;">Where to view those results.<br>(Only for Owner
+					<img class="owner permission-enabled" style="width: 20px; height: 20px;" src="/assets/owner.png"> and Editor
+					<img class="owner permission-enabled" style="width: 20px; height: 20px;" src="/assets/editor.png">)
+				</p>
+			</div>
+			<div class="col-sm-9" id="website-link">
+				<p>
+					<i class="fas fa-globe-americas"></i>
+					{{#if website}}
+					{{website}}
+					{{else}}
+					(Empty)
+					{{/if}}
+				</p>
+				{{#ifEqual 'owner' permission}}
+				<button class="normal-btn" onclick="editWebsite()">Edit</button>
+				{{else ifEqual 'editor' permission}}
+				<button class="normal-btn" onclick="editWebsite()">Edit</button>
+				{{else}}
+				<abbr title="Only for Owner and Editor">
+					<button class="normal-btn disabled-btn" disabled>Edit</button>
+				</abbr>
+				{{/ifEqual}}
+			</div>
+		</div>
+		<div>
+			<hr>
+		</div>
+	</div>
+</div>
+<div id="side-modal">
+	<p class="center" id="side-modal-title">Edit GitHub</p>
+	<hr>
+	<br>
+	<label id="side-modal-input-title">GitHub Link</label>
+	<br>
+	<input type="text" id="side-modal-input" class="form-control key small-font"
+		placeholder="https://github.com/IshaanOhri/DotKeeper">
+	<div id="error-side-modal">Required</div>
+	<div class="btn-container">
+		<hr>
+		<br>
+		<div class="row">
+			<div class="col-sm-6 btn-holder">
+				<button id="no-side-modal-btn" onclick="noSideModal()">Cancel</button>
+			</div>
+			<div class="col-sm-6 btn-holder">
+				<button id="yes-side-modal-btn" onclick="yesSideModal()">
+					<div id="yes-side-modal-text" class="center">
+						Save
+					</div>
+					<div id="yes-side-modal-load" class="center">
+						<i class="fas fa-circle-notch fa-spin"></i>
+					</div>
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="delete-modal">
+	<p class="center">Delete project</p>
+	<hr>
+	<br>
+	<label>Deleting your project is irreversible. <br> Enter your app's name
+		( <span class="delete-project-name-font"><b>{{projectName}}</b></span> ) below to confirm you want to
+		permanently delete it:</label>
+	<br>
+	<input type="text" id="project-name" class="form-control key delete-project" placeholder="Enter project name here">
+	<div id="project-name-error-modal">Required</div>
+	<div class="btn-container">
+		<hr>
+		<br>
+		<div class="row">
+			<div class="col-sm-6 btn-holder">
+				<button id="close-delete-modal" onclick="closeDeleteModal()">Cancel</button>
+			</div>
+			<div class="col-sm-6 btn-holder">
+				<button id="delete-project-btn" onclick="deleteProject()">
+					<div id="delete-project-text" class="center">
+						Delete
+					</div>
+					<div id="delete-project-load" class="center">
+						<i class="fas fa-circle-notch fa-spin"></i>
+					</div>
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="toast" id="message-toast" role="alert" aria-live="assertive" aria-atomic="true">
+	<div class="toast-header">
+		<img src="/assets/favicon.svg" style="width: 25px; height: 25px" class="rounded mr-2" alt="...">
+		&nbsp;
+		&nbsp;
+		<strong id="toast-heading" class="mr-auto error-toast">Not Allowed</strong>
+		{{!-- <small>11 mins ago</small> --}}
+	</div>
+	<div id="toast-body" class="toast-body">
+		You do not have permission to delete the project
+	</div>
+</div>
+<script>
+	const option = {
+		animation: true,
+		autohide: true,
+		delay: 3000
+	};
+
+	var toast = document.getElementById('message-toast');
+	var toastHeading = document.getElementById('toast-heading');
+	var toastBody = document.getElementById('toast-body');
+	var bsToast = new bootstrap.Toast(toast, option);
+
+	const sideModal = document.getElementById('side-modal');
+	const disableBodyModal = document.getElementById('disable-body-modal');
+	const yesSideModalBtn = document.getElementById('yes-side-modal-btn');
+	const yesSideModalText = document.getElementById('yes-side-modal-text');
+	const yesSideModalLoad = document.getElementById('yes-side-modal-load');
+	const noSideModalBtn = document.getElementById('no-side-modal-btn');
+	const sideModalInput = document.getElementById('side-modal-input');
+	const errorSideModal = document.getElementById('error-side-modal');
+	const sideModalTitle = document.getElementById('side-modal-title');
+	const sideModalInputTitle = document.getElementById('side-modal-input-title');
+
+	const gitHubLink = document.getElementById('github-link');
+	const websiteLink = document.getElementById('website-link');
+
+	const deleteModal = document.getElementById('delete-modal');
+	const deleteProjectText = document.getElementById('delete-project-text');
+	const deleteProjectLoad = document.getElementById('delete-project-load');
+	const projectNameInput = document.getElementById('project-name');
+	const deleteProjectError = document.getElementById('project-name-error-modal');
+	const deleteProjectBtn = document.getElementById('delete-project-btn');
+
+	let sideModalValue;
+
+	function openSideModal() {
+		sideModal.style.width = "25%";
+		sideModal.style.padding = "20px";
+		disableBodyModal.style.display = "block"
+	}
+
+	function closeSideModal() {
+		sideModal.style.width = "0%";
+		sideModal.style.padding = "0px";
+		disableBodyModal.style.display = "none"
+	}
+
+	function editGitHub() {
+		openSideModal();
+		sideModalTitle.innerHTML = "Edit GitHub";
+		sideModalInputTitle.innerHTML = "GitHub Link";
+		sideModalValue = "github";
+	}
+
+	function editWebsite() {
+		openSideModal();
+		sideModalInputTitle.innerHTML = "Edit Website";
+		sideModalTitle.innerHTML = "Website Link";
+		sideModalValue = "website";
+	}
+
+	function noSideModal() {
+		sideModalInput.value = "";
+		closeSideModal();
+	}
+
+	async function yesSideModal() {
+		const link = sideModalInput.value.trim();
+
+		if (link === "") {
+			sideModalInput.style.border = "1px solid #D64242";
+			errorSideModal.style.opacity = 1;
+			errorSideModal.innerHTML = "Required"
+			return;
+		}
+
+		yesSideModalText.style.display = "none";
+		yesSideModalLoad.style.display = "block";
+		yesSideModalBtn.disabled = true;
+
+		var myHeaders = new Headers();
+		myHeaders.append("Content-Type", "application/json");
+		myHeaders.append("Accept", "application/json");
+
+		let raw;
+		if (sideModalValue === "github") {
+			raw = JSON.stringify({
+				github: link,
+				projectId: "{{ projectId }}"
+			});
+		} else {
+			raw = JSON.stringify({
+				website: link,
+				projectId: "{{ projectId }}"
+			});
+		}
+
+		var requestOptions = {
+			method: 'PATCH',
+			credentials: 'include',
+			headers: myHeaders,
+			body: raw,
+			redirect: 'follow'
+		};
+
+		let response;
+		if (sideModalValue === "github") {
+			response = await fetch("http://localhost:3000/project/edit/github", requestOptions);
+		} else {
+			response = await fetch("http://localhost:3000/project/edit/website", requestOptions);
+		}
+
+		const result = await response.json();
+
+		if (sideModalValue === "github") {
+			if (result.metadata.success) {
+				toastHeading.className = "mr-auto success-toast";
+				toastHeading.innerHTML = "GitHub Link Edited";
+				toastBody.innerHTML = "GitHub link has been successfully edited";
+				bsToast.show();
+				gitHubLink.innerHTML = `<i class="fab fa-github"></i> ${link}`
+				closeSideModal();
+			} else {
+				if (result.metadata.status === 403) {
+					toastHeading.className = "mr-auto error-toast";
+					toastHeading.innerHTML = "Not Allowed";
+					toastBody.innerHTML = "You do not have permission to edit the GitHub link";
+					bsToast.show();
+				} else {
+					toastHeading.className = "mr-auto error-toast";
+					toastHeading.innerHTML = "Internal Error";
+					toastBody.innerHTML = "An error occurred. Please refresh and try again";
+					bsToast.show();
+				}
+			}
+		} else {
+			if (result.metadata.success) {
+				toastHeading.className = "mr-auto success-toast";
+				toastHeading.innerHTML = "Website Link Edited";
+				toastBody.innerHTML = "Website link has been successfully edited";
+				bsToast.show();
+				websiteLink.innerHTML = `<i class="fas fa-globe-americas"></i> ${link}`
+				closeSideModal();
+			} else {
+				if (result.metadata.status === 403) {
+					toastHeading.className = "mr-auto error-toast";
+					toastHeading.innerHTML = "Not Allowed";
+					toastBody.innerHTML = "You do not have permission to edit the Website link";
+					bsToast.show();
+				} else {
+					toastHeading.className = "mr-auto error-toast";
+					toastHeading.innerHTML = "Internal Error";
+					toastBody.innerHTML = "An error occurred. Please refresh and try again";
+					bsToast.show();
+				}
+			}
+		}
+		yesSideModalText.style.display = "flex";
+		yesSideModalLoad.style.display = "none";
+		yesSideModalBtn.disabled = false;
+		sideModalInput.value = "";
+	}
+
+	function openDeleteModal() {
+		deleteModal.style.width = "25%";
+		deleteModal.style.padding = "20px";
+		disableBodyModal.style.display = "block"
+	}
+
+	function closeDeleteModal() {
+		deleteModal.style.width = "0%";
+		deleteModal.style.padding = "0px";
+		disableBodyModal.style.display = "none"
+	}
+
+	async function deleteProject() {
+		const projectName = projectNameInput.value.trim();
+
+		if (projectName === "") {
+			projectNameInput.style.border = "1px solid #D64242";
+			deleteProjectError.style.opacity = 1;
+			deleteProjectError.innerHTML = "Required"
+			return;
+		}
+
+		if (projectName != "{{projectName}}") {
+			projectNameInput.style.border = "1px solid #D64242";
+			deleteProjectError.style.opacity = 1;
+			deleteProjectError.innerHTML = "Enter correct name"
+			return;
+		}
+
+		deleteProjectText.style.display = "none";
+		deleteProjectLoad.style.display = "block";
+		deleteProjectBtn.disabled = true;
+
+		var myHeaders = new Headers();
+		myHeaders.append("Content-Type", "application/json");
+		myHeaders.append("Accept", "application/json");
+
+		var raw = JSON.stringify({
+			projectId: "{{ projectId }}"
+		});
+
+		var requestOptions = {
+			method: 'DELETE',
+			credentials: 'include',
+			headers: myHeaders,
+			body: raw,
+			redirect: 'follow'
+		};
+
+		const response = await fetch("http://localhost:3000/project/delete", requestOptions);
+		const result = await response.json();
+
+		projectNameInput.value = "";
+
+		if (result.metadata.success) {
+			toastHeading.className = "mr-auto success-toast";
+
+			toastHeading.innerHTML = "Project Deleted";
+			toastBody.innerHTML = "Project has been successfully deleted";
+			bsToast.show();
+			closeDeleteModal();
+			window.location.replace("http://localhost:3000/dashboard")
+		} else {
+			if (result.metadata.status === 403) {
+				toastHeading.className = "mr-auto error-toast";
+				toastHeading.innerHTML = "Not Allowed";
+				toastBody.innerHTML = "You do not have permission to delete the project";
+				bsToast.show();
+			} else {
+				toastHeading.className = "mr-auto error-toast";
+				toastHeading.innerHTML = "Internal Error";
+				toastBody.innerHTML = "An error occurred. Please refresh and try again";
+				bsToast.show();
+			}
+		}
+
+		deleteProjectText.style.display = "flex";
+		deleteProjectLoad.style.display = "none";
+		deleteProjectBtn.disabled = false;
+	}
+
+	projectNameInput.onfocus = () => {
+		projectNameInput.style.border = "1px solid #76767c";
+		deleteProjectError.style.opacity = 0;
+	}
+</script>
